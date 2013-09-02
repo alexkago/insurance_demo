@@ -1,0 +1,41 @@
+1 High Income, expensive child
+2 Very Important Provincials
+3 High status seniors
+4 Affluent senior apartments
+5 Mixed seniors
+6 Career and childcare
+7 Dinki's (double income no kids)
+8 Middle class families
+9 Modern, complete families
+10 Stable family
+11 Family starters
+12 Affluent young families
+13 Young all american family
+14 Junior cosmopolitan
+15 Senior cosmopolitans
+16 Students in apartments
+17 Fresh masters in the city
+18 Single youth
+19 Suburban youth
+20 Etnically diverse
+21 Young urban have-nots
+22 Mixed apartment dwellers
+23 Young and rising
+24 Young, low educated 
+25 Young seniors in the city
+26 Own home elderly
+27 Seniors in apartments
+28 Residential elderly
+29 Porchless seniors: no front yard
+30 Religious elderly singles
+31 Low income catholics
+32 Mixed seniors
+33 Lower class large families
+34 Large family, employed child
+35 Village families
+36 Couples with teens 'Married with children'
+37 Mixed small town dwellers
+38 Traditional families
+39 Large religous families
+40 Large family farms
+41 Mixed rurals
