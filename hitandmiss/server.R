@@ -13,7 +13,7 @@ shinyServer(function(input, output) {
     return(subset)
   })
   
-  output$plot <- renderPlot({
+  output$plotall <- renderPlot({
     
     p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
     
@@ -32,13 +32,63 @@ shinyServer(function(input, output) {
       p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
     }
     
-    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = c("grey","black"))
-
     print(p)
     
-  }, height=550)
+  })
+  
+  output$plotmarketing <- renderPlot({
+    
+    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
+    
+    p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
+    
+    if (input$color != 'None')
+      p <- p + aes_string(color=input$color)
+    
+    if (input$jitter) {
+      width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
+                               nlevels(ticcompl[[input$x]]),
+                               diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
+      height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
+                                nlevels(ticcompl[[input$y]]),
+                                diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
+    }
+    
+    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = c("grey","black"))
+    
+    print(p)
+    
+  })
+  
+  output$plotdatascience <- renderPlot({
+    
+    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
+    
+    p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
+    
+    if (input$color != 'None')
+      p <- p + aes_string(color=input$color)
+    
+    if (input$jitter) {
+      width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
+                               nlevels(ticcompl[[input$x]]),
+                               diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
+      height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
+                                nlevels(ticcompl[[input$y]]),
+                                diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
+    }
+    
+    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = c("grey","black"))
+    
+    print(p)
+    
+  })
+  
   
   output$selectXcontrols <- renderUI({
+    
     if (is.factor(dataset()[[input$x]]))
       choices <- levels(dataset()[[input$x]])
     else
