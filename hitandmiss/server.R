@@ -2,90 +2,197 @@ library(shiny)
 library(ggplot2)
 
 shinyServer(function(input, output) {
-  
+
   dataset <- reactive({
     subset <- ticcompl[sample(nrow(ticcompl), input$sampleSize),]
-    subset$xrange <- subset[[input$x]] %in% input$selectedX
-    subset$yrange <- subset[[input$y]] %in% input$selectedY
-    
-    subset$comb_range <- subset$xrange & subset$yrange
-        
-    return(subset)
+  })
+  
+  traindataset <- reactive({
+    subset <- ticcompl[sample(nrow(ticcompl), input$sampleSize),]
   })
   
   output$plotall <- renderPlot({
     
-    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
-    
+    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y))
+
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
     
     if (input$color != 'None')
       p <- p + aes_string(color=input$color)
     
-    if (input$jitter) {
+    if (input$jitterStrength > 0) {
       width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
                                nlevels(ticcompl[[input$x]]),
                                diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
       height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
                                nlevels(ticcompl[[input$y]]),
                                diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
-      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength),alpha=input$alphaStrength)
+    } else {
+      p <- p + geom_point(alpha=input$alphaStrength)
     }
     
     print(p)
-    
   })
   
   output$plotmarketing <- renderPlot({
+    plotData <- dataset()
     
-    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
+    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
+    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
+    plotData$comb_range <- plotData$xrange & plotData$yrange
+    plotData$comb_range <- ifelse(plotData$comb_range,'black','Predict No Buy')
+    plotData$comb_range <- ifelse(plotData$comb_range == 'black',
+                                  ifelse(plotData$CARAVAN == 1,'Correctly Predicted Buy','Incorrectly Predicted Buy'),
+                                  plotData$comb_range)
+    
+    plotData$comb_range <- factor(plotData$comb_range)
+        
+    p <- ggplot(plotData, aes_string(x=input$x, y=input$y)) 
     
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
     
     if (input$color != 'None')
       p <- p + aes_string(color=input$color)
     
-    if (input$jitter) {
+    if (input$jitterStrength > 0) {
       width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
                                nlevels(ticcompl[[input$x]]),
                                diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
       height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
                                 nlevels(ticcompl[[input$y]]),
                                 diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
-      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength),alpha=input$alphaStrength)
+    } else {
+      p <- p + geom_point(alpha=input$alphaStrength)
     }
-    
-    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = c("grey","black"))
+    #browser()
+    colorpalette <- c("Correctly Predicted Buy" = "green","Predict No Buy" = "grey","Incorrectly Predicted Buy" = "grey30")
+    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = colorpalette)
+    #p <- p + theme(legend.position="none")
     
     print(p)
     
+  })
+  
+  output$mktconfusionMatrix <- renderTable({
+    plotData <- dataset()
+        
+    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
+    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
+    plotData$comb_range <- plotData$xrange & plotData$yrange
+    
+    plotData$comb_range <- ifelse(plotData$comb_range,"Predict Buy","Predict No Buy")
+    plotData$CARAVAN <- ifelse(plotData$CARAVAN == 0,"Actual No Buy","Actual Buy")
+        
+    table(plotData$CARAVAN,plotData$comb_range)
   })
   
   output$plotdatascience <- renderPlot({
-    
-    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
+    plotData <- dataset()
+
+    plotData$predictions <- eval(call(input$predictFcnName))
+
+    p <- ggplot(plotData, aes_string(x=input$x, y=input$y))
     
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
     
     if (input$color != 'None')
       p <- p + aes_string(color=input$color)
     
-    if (input$jitter) {
+    if (input$jitterStrength > 0) {
       width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
                                nlevels(ticcompl[[input$x]]),
                                diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
       height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
                                 nlevels(ticcompl[[input$y]]),
                                 diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
-      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength))
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength),alpha=input$alphaStrength)
+    } else {
+      p <- p + geom_point(alpha=input$alphaStrength)
     }
     
-    p <- p + aes_string(color='comb_range') + scale_colour_manual(values = c("grey","black"))
-    
+    p <- p + aes_string(color='predictions')
+        
     print(p)
-    
   })
   
+  output$plotdatascienceclassification <- renderPlot({
+    plotData <- dataset()
+    
+    plotData$predictions <- eval(call(input$predictFcnName))
+    
+    plotData$predictions <- ifelse(plotData$predictions < input$classCutoff,FALSE,TRUE)
+    
+    plotData$predictions <- ifelse(plotData$predictions,'black','Predict No Buy')
+    plotData$predictions <- ifelse(plotData$predictions == 'black',
+                                   ifelse(plotData$CARAVAN == 1,'Correctly Predicted Buy','Incorrectly Predicted Buy'),
+                                   plotData$predictions)
+    
+    p <- ggplot(plotData, aes_string(x=input$x, y=input$y))
+    
+    p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
+    
+    if (input$color != 'None')
+      p <- p + aes_string(color=input$color)
+    
+    if (input$jitterStrength > 0) {
+      width_strength <- ifelse(is.factor(ticcompl[[input$x]]),
+                               nlevels(ticcompl[[input$x]]),
+                               diff(range(ticcompl[[input$x]]))) * 0.01 * input$jitterStrength
+      height_strength <- ifelse(is.factor(ticcompl[[input$y]]),
+                                nlevels(ticcompl[[input$y]]),
+                                diff(range(ticcompl[[input$y]]))) * 0.01 * input$jitterStrength
+      p <- p + geom_jitter(position=position_jitter(width=width_strength,height=height_strength),alpha=input$alphaStrength)
+    } else {
+      p <- p + geom_point(alpha=input$alphaStrength)
+    }
+    
+    colorpalette <- c("Correctly Predicted Buy" = "green","Predict No Buy" = "grey","Incorrectly Predicted Buy" = "grey30")
+    p <- p + aes_string(color='predictions') + scale_colour_manual(values = colorpalette)
+    
+    print(p)
+  })
+  
+  output$plotperfcurve <- renderPlot({
+    plotData <- dataset()
+    
+    i <- 1
+    fscore <- c()
+    xval <- seq(0,0.3,0.005)
+    for (cutoff in xval) {
+      plotData$predictions <- eval(call(input$predictFcnName))
+      plotData$predictions <- ifelse(plotData$predictions < cutoff,FALSE,TRUE)
+      
+      true_pos <- length(which(plotData$predictions & plotData$CARAVAN == 1))
+      true_neg <- length(which(!plotData$predictions & plotData$CARAVAN == 0))
+      false_pos <- length(which(plotData$predictions & plotData$CARAVAN == 0))
+      false_neg <- length(which(!plotData$predictions & plotData$CARAVAN == 1))
+      
+      prec <- true_pos/(true_pos+false_pos)
+      recall <- true_pos/(true_pos+false_neg)
+      
+      fscore[i] <- 2 * (prec*recall)/(prec+recall)
+      i <- i + 1
+    }
+    perfData <- data.frame(fscore=fscore,cutoff=xval)
+    
+    p <- ggplot(perfData, aes_string(x='cutoff', y='fscore')) + geom_line()
+
+    print(p)
+  })
+
+  output$dsconfusionMatrix <- renderTable({
+    plotData <- dataset()
+    
+    plotData$predictions <- eval(call(input$predictFcnName))
+    plotData$predictions <- ifelse(plotData$predictions < input$classCutoff,FALSE,TRUE)
+    
+    plotData$predictions <- ifelse(plotData$predictions,"Predict Buy","Predict No Buy")
+    plotData$CARAVAN <- ifelse(plotData$CARAVAN == 0,"Actual No Buy","Actual Buy")
+    
+    table(plotData$CARAVAN,plotData$predictions)
+  })
   
   output$selectXcontrols <- renderUI({
     
@@ -104,6 +211,22 @@ shinyServer(function(input, output) {
       choices <- sort(unique(dataset()[[input$y]]))
     
     checkboxGroupInput("selectedY", "Select Y Values", choices, selected = choices)
+  })
+  
+  predictRandomForest <- reactive({
+    library("randomForest")
+    trainData <- traindataset()
+    trainData[,86] <- factor(trainData[,86])
+    
+    posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
+    negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
+    
+    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior))
+    print(rf)
+    
+    predictions <- predict(rf,dataset()[2:85],type='prob')[,2]
+    
+    return(predictions)
   })
   
 })
