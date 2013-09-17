@@ -8,7 +8,9 @@ names(value_names) <- col_dict
 
 shinyUI(pageWithSidebar(
   
-  headerPanel("Insurance Dataset Explorer"),
+  headerPanel(img(src='https://www.google.com/a/gopivotal.com/images/logo.gif?alpha=1&service=google_white',
+                  align='bottom',
+                  " - Insurance Data Demo")),
   
   sidebarPanel(
     
@@ -72,8 +74,7 @@ shinyUI(pageWithSidebar(
                plotOutput("plotdatascienceclassification"),
                p("Table representation of the model decision outcome."),
                tableOutput("dsconfusionMatrix"),
-               p("Plot of the F-score for different classifation cutoffs. In theory, these can go from 0 to 1, but for a random forest
-                 with this type of dataset it's best to choose the cutoff to be small."),
+               p("Plot of the F-score for different classifation cutoffs."),
                plotOutput("plotperfcurve"),
                value="datascience"
       ),
