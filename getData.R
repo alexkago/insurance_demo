@@ -139,6 +139,10 @@ assignLevels <- function(ticcompl) {
     ticcompl[[colname]] <- createFactor(ticcompl[[colname]],L4_dict)
   }
   
+  for (colname in names(ticcompl)[65:86]) {
+    ticcompl[[colname]] <- factor(ticcompl[[colname]])
+  }
+  
   return(ticcompl)
 }
 
@@ -196,7 +200,7 @@ col_dict <- c('Customer Subtype',
               'Contr. tractor pol.',
               'Contr. agricultural machines pol. ',
               'Contr. moped pol.',
-              'Contr. life ins.s',
+              'Contr. life ins. pol.',
               'Contr. private accident ins. pol.',
               'Contr. family accidents ins. pol.',
               'Contr. disability ins. pol.',
@@ -217,7 +221,7 @@ col_dict <- c('Customer Subtype',
               'No. of tractor pol.',
               'No. of agricultural machines pol.',
               'No. of moped pol.',
-              'No. of life ins.s',
+              'No. of life ins. pol.',
               'No. of private accident ins. pol.',
               'No. of family accidents ins. pol.',
               'No. of disability ins. pol.',
@@ -227,4 +231,4 @@ col_dict <- c('Customer Subtype',
               'No. of bicycle pol.',
               'No. of property ins. pol.',
               'No. of social security ins. pol.',
-              'No. of mobile home pol. 0 - 1')
+              'No. of mobile home pol.')

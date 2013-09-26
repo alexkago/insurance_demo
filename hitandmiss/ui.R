@@ -8,75 +8,136 @@ names(value_names) <- col_dict
 
 shinyUI(pageWithSidebar(
   
-  headerPanel(img(src='https://www.google.com/a/gopivotal.com/images/logo.gif?alpha=1&service=google_white',
-                  align='bottom',
-                  " - Insurance Data Demo")),
+  headerPanel("Insurance Marketing Demo",
+              windowTitle='Insurance Marketing Demo'),
   
   sidebarPanel(
-    
-    sliderInput('sampleSize', 'Sample Size', min=1, max=nrow(dataset),
-                value=min(1000, nrow(dataset)), step=500, round=0),
-    
-    selectInput('x', 'X', value_names, selected=names(value_names)[5]),
-    selectInput('y', 'Y', value_names, selected=names(value_names)[4]),
+    img(src='https://www.google.com/a/gopivotal.com/images/logo.gif?alpha=1&service=google_white'),
     conditionalPanel(
-      condition = "input.panelchoice == 'all'",
-      selectInput('color', 'Color', c('None', value_names))
-    ),
-    
-    sliderInput('alphaStrength', 'Alpha Strength', min=0, max=1, value=1, step=0.05, round=F),
-    
-    sliderInput('jitterStrength', 'Jitter Strength', min=0, max=5, value=1, step=0.1, round=F),
-    
-    conditionalPanel(
-      condition = "input.panelchoice == 'marketing'",
-      checkboxInput('showSelectX','Select X Variables'),
+      condition = "input.panelchoice != 'introduction'",
+      h4("Select plot parameters:"),
+      
+      sliderInput('sampleSize', 'Sample Size', min=2500, max=nrow(dataset),
+                  value=min(4000, nrow(dataset)), step=500, round=0),
+      
+      selectInput('x', 'X', value_names, selected=names(value_names)[5]),
+      selectInput('y', 'Y', value_names, selected=names(value_names)[4]),
       conditionalPanel(
-        condition = "input.showSelectX",
-        uiOutput('selectXcontrols')
+        condition = "input.panelchoice == 'all'",
+        selectInput('color', 'Color', c('None', value_names))
       ),
-      checkboxInput('showSelectY','Select Y Variables'),
+      
+      sliderInput('alphaStrength', 'Opacity', min=0, max=1, value=1, step=0.05, round=F),
+      
+      sliderInput('jitterStrength', 'Jitter', min=0, max=5, value=2, step=0.1, round=F),
+      
       conditionalPanel(
-        condition = "input.showSelectY",
-        uiOutput('selectYcontrols')
+        condition = "input.panelchoice == 'marketing'",
+        h4("Select and deselect customers groups:"),
+        checkboxInput('showSelectX','Select X Variables'),
+        conditionalPanel(
+          condition = "input.showSelectX",
+          uiOutput('selectXcontrols')
+        ),
+        checkboxInput('showSelectY','Select Y Variables'),
+        conditionalPanel(
+          condition = "input.showSelectY",
+          uiOutput('selectYcontrols')
+        )
+      ),
+      conditionalPanel(
+        condition = "input.panelchoice == 'datascience'",
+        h4("Select predictive algorithm:"),
+        selectInput('predictFcnName', 'Choose Predictive Algorithm', c("Random Forest" = "predictRandomForest", 
+                                                                       "Logistic Regression" = "logisticRegression")),
+        sliderInput('classCutoff', 'Classification Cutoff', min=0, max=0.5, value=0.1, step=0.001, round=F)
+      ),
+      conditionalPanel(
+        condition = "input.panelchoice == 'datascience' || input.panelchoice == 'marketing'",
+        h4("Cost and Return Values:"),
+        textInput("mktCost","Marketing cost per customer",value="1"),
+        textInput("mktReturn","Return on new customer",value="100")
       )
-    ),
-    conditionalPanel(
-      condition = "input.panelchoice == 'datascience'",
-      selectInput('predictFcnName', 'Choose Predictive Algorithm', c("Random Forest" = "predictRandomForest", 
-                                                                     "Logistic Regression" = "logisticRegression")),
-      sliderInput('classCutoff', 'Classification Cutoff', min=0, max=0.3, value=0.05, step=0.001, round=F)
     )
   ),
   
   mainPanel(
     tabsetPanel(
-      tabPanel("All Values", 
-               p("This tab is for general exploration of the dataset."),
+      tabPanel("Introduction", 
+               h4("This is an interactive Data Science demo by the Pivotal Data Science team (www.gopivotal.com)."),
+               p("Imagine the following scenario: An insurance company creates a new product, which is a mobile home/caravan
+                 insurance policy. It already has data on their customers and what types of policies they already own, together with
+                 external data that contains demographic information on the customers. They want to determine from this which 
+                 customers are likely to buy the new mobile home insurance policy. Therefore, the company sends out offers to a number
+                 of customers and collects data on responding customers."),
+               p("After this, a team is given the task to determine from the collected data which customers want to buy the new
+                 mobile home insurance. They can create hypotheses on this 'by hand' and determine customer groups that are likely
+                 to buy insurance simply by looking through the data. Alternatively, they could also go with a data-driven approach
+                 and use a predictive model to determine the target group. This demo shows how a data-driven approach to select 
+                 customers for marketing has advantages over manual 
+                 segmentation of the customer base by hand."),
+               p("This demo allows you to go through the manual process first and select the best customers for marketing the new
+                 insurance policy 'by hand'. Try
+                 to be as good as you can here by looking at the dataset and iteratively refine your hypothesis. You can then assign a
+                 cost to your marketing campaign so you can see how effectively this budget is spent."),
+               p("After this, compare your manual selection to a selection generated by a predictive model. It will use the same cost you
+                 assigned earlier and allows you to compare the difference between both approaches. Hopefully, you will
+                 find reduced cost and an increasing return rate on a model based marketing campaign."),
+               h5("Instructions:"),
+               p("You navigate through this demo by clicking on the individual tabs above this text ('Introduction', 'Data Explorer',
+                 'Targeting by Hand' and 'Targeting with model support'). You can always come back to this panel to review the
+                 instructions."),
+               p("To get a general understanding of the dataset and what it looks like, you can explore the dataset on the 
+                 'Data Explorer' Tab."),
+               p("Since this demo is intended to provide an interactive comparison, on the 'Targeting by Hand' tab you can try to 
+                 specify a target group for marketing insurance by hand."),
+               p("In contrast, the 'Targeting with model support' tab will walk you through a process in 
+                 which a model is fitted to the dataset that predicts which customers are likely to buy an insurance."),
+               value="introduction"
+      ), 
+      tabPanel("Data Explorer", 
+               h5("This tab is for general exploration of the dataset."),
+               p("On the left hand side you can see the controls for this plot. The plot will update automatically after you change
+                 a setting. The 'Sample Size' slider controls how many points of
+                 the original dataset you want to see in the plot. It's a good idea to select a sample of only a few thousand points,
+                 otherwise the plot will get overcrowded."),
+               p("You can also select both X and Y axes of the plot below on the left. You can display a third variable by changing 
+                 the 'Color' option on the left, which will color the points in the plot according to this variable. The 'Opacity' allows
+                 you to change the transparency of points, to make overlapping points visible. With 'Jitter' you can introduce some
+                 random displacement into the plot, also to avoid overlapping points."),
+               p("Take your time and explore the dataset carefully! As a tip: You could already start looking for interesting customer
+                 groups which might be interested in a new insurance. Set the 'Color' dropdown list to 'No. of mobile home pol.',
+                 and you will see customers that bought mobile home insurance in a different color on the plot."),
                plotOutput("plotall"),
                value="all"
       ), 
-      tabPanel("Marketing selection", 
+      tabPanel("Targeting by hand", 
                p("On this tab, a selection of customers can be done manually and the results of this method are displayed on the bottom."),
                p("Groups of customers can be selected/deselected on the left. Initially, all customers are selected, that means you think
                  all customers will buy caravan insurance. Deselect groups that you think will not buy caravan insurance."),
                plotOutput("plotmarketing"),
                p("Displaying the results of the selection as a table."),
                tableOutput("mktconfusionMatrix"),
+               tableOutput("mktCostAnalysis"),
                value="marketing"
       ), 
-      tabPanel("Model selection", 
+      tabPanel("Targeting with model support", 
                h3("Please wait a few seconds for the model to predict!"),
                p("On this tab, the outcome of the prediction with a data science model is illustrated."),
-               p("Model output, a probability between 0 and 1 for a customer to buy the caravan insurance."),
-               plotOutput("plotdatascience"),
+               #p("Model output, a probability between 0 and 1 for a customer to buy the caravan insurance."),
+               #plotOutput("plotdatascience"),
                p("Model decision based on the classification cutoff, which can be tuned by the slider on the left."),
                plotOutput("plotdatascienceclassification"),
                p("Table representation of the model decision outcome."),
                tableOutput("dsconfusionMatrix"),
-               p("Plot of the F-score for different classifation cutoffs."),
-               plotOutput("plotperfcurve"),
+               tableOutput("dsCostAnalysis"),
+               #p("Plot of the F-score for different classifation cutoffs."),
+               #plotOutput("plotperfcurve"),
                value="datascience"
+      ),
+      tabPanel("Next Steps", 
+               h3("These are the next steps"),
+               value="nextsteps"
       ),
       id="panelchoice")
   )
