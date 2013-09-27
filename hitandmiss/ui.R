@@ -14,7 +14,7 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     img(src='https://www.google.com/a/gopivotal.com/images/logo.gif?alpha=1&service=google_white'),
     conditionalPanel(
-      condition = "input.panelchoice != 'introduction'",
+      condition = "input.panelchoice != 'introduction' && input.panelchoice != 'nextsteps'",
       h4("Select plot parameters:"),
       
       sliderInput('sampleSize', 'Sample Size', min=2500, max=nrow(dataset),
@@ -34,12 +34,12 @@ shinyUI(pageWithSidebar(
       conditionalPanel(
         condition = "input.panelchoice == 'marketing'",
         h4("Select and deselect customers groups:"),
-        checkboxInput('showSelectX','Select X Variables'),
+        checkboxInput('showSelectX','Show values of X dimension'),
         conditionalPanel(
           condition = "input.showSelectX",
           uiOutput('selectXcontrols')
         ),
-        checkboxInput('showSelectY','Select Y Variables'),
+        checkboxInput('showSelectY','Show values of Y dimension'),
         conditionalPanel(
           condition = "input.showSelectY",
           uiOutput('selectYcontrols')
@@ -112,31 +112,65 @@ shinyUI(pageWithSidebar(
                value="all"
       ), 
       tabPanel("Targeting by hand", 
-               p("On this tab, a selection of customers can be done manually and the results of this method are displayed on the bottom."),
-               p("Groups of customers can be selected/deselected on the left. Initially, all customers are selected, that means you think
-                 all customers will buy caravan insurance. Deselect groups that you think will not buy caravan insurance."),
+               h5("This tab allows you to select a group for insurance marketing manually."),
+               p("The purpose of this tab is to give you the ability to select a target group for insurance marketing yourself. While doing
+                 this, you can continually refine your hypothesis by looking at the dataset again and further select/deselect user groups. 
+                 The result of your targeting group is shown graphically in the plot below as well as in the success numbers below the plot."),
+               p("On the left hand side you can control the parameters of the plot again. Below the plot parameters, it is possible to select
+                 and deselect groups of customers for your target group. You can restrict the target group in two dimensions, which are the 
+                 same as the ones which are currently visible on the plot."),
+               p("You should try to find relevant dimensions for the plot first, which show a clear separability of buyers and non-buyers of
+                 the caravan insurance. After you found two dimensions, you can select the customer groups for marketing. Initially, all 
+                 customers are selected, that we will market caravan insurance to everyone. Deselect groups that you think will 
+                 not buy caravan insurance."),
+               p("To assign a concrete dollar value to your marketing success, you can assign a cost to your marketing campaign as well as a
+                 return for every new customer for the new caravan insurance. The results based off these numbers are shown below the plot."),
                plotOutput("plotmarketing"),
-               p("Displaying the results of the selection as a table."),
-               tableOutput("mktconfusionMatrix"),
+               p("These are the financial results of the chosen target group selection based off the cost and return values supplied on the 
+                 left."),
+               #tableOutput("mktconfusionMatrix"),
                tableOutput("mktCostAnalysis"),
                value="marketing"
       ), 
       tabPanel("Targeting with model support", 
-               h3("Please wait a few seconds for the model to predict!"),
-               p("On this tab, the outcome of the prediction with a data science model is illustrated."),
+               h4("When you first come on this page, the model will be trained. Please wait a few seconds for this to finish..."),
+               p("A predictive model is being trained on this tab, to be able to predict which customers are likely to buy caravan insurance.
+                 After the model has finished training, you can see an output of the model decision in the plot below. Keep in mind, that
+                 with this approach, you're not only limited to two variables, instead the model looks at all variables simultaneously. Below
+                 the plot you have the additional information what the financial performance of the model is with your chosen cost and return
+                 values and furthermore, which variables are of high importance to the trained model"),
+               p("On the left hand side you can control the parameters of the plot like in previous tabs. Below the plot controls you can
+                 select what kind of predictive model you want to train (for now, the only option is the 'Random Forest' algorithm).
+                 After the model is trained, you have the possibility to change the 'Classification Cutoff' of the model, to adjust how the
+                 selective the trained model is in predicting insurance customers. If you set a low cutoff, you will see more predicted 
+                 buyers, with a high cutoff the model will become very selective. Below that you can set the cost and return values for
+                 marketing"),
+               p("After the model is finished training, you should try to set the cutoff to a value such that the return on marketing is
+                 comparable to the return on marketing on the previous tab. This allows you to compare both approaches. You will see that
+                 the data-driven approach has a significantly higher ROI. You can also choose to be very selective (set a high cutoff) and 
+                 you will see the ROI increase very fast. This could give you information about high-value customers in your customer base."),
                #p("Model output, a probability between 0 and 1 for a customer to buy the caravan insurance."),
                #plotOutput("plotdatascience"),
-               p("Model decision based on the classification cutoff, which can be tuned by the slider on the left."),
+               p("The below plot shows the classification of the customer base into buyers and non-buyers, based on the trained model and
+                 the set classification cutoff on the left."),
                plotOutput("plotdatascienceclassification"),
-               p("Table representation of the model decision outcome."),
-               tableOutput("dsconfusionMatrix"),
+               p("These are the financial results of the chosen target group selection based off the cost and return values supplied on the 
+                 left."),
+               #tableOutput("dsconfusionMatrix"),
                tableOutput("dsCostAnalysis"),
                #p("Plot of the F-score for different classifation cutoffs."),
                #plotOutput("plotperfcurve"),
+               p("The table below should give you some intuition about what the trained model is doing. It shows how important each of the
+                 shown variables is to the final model decision and shows the variables in decreasing order of importance. However, it does
+                 not give information about what kind of value should be realized for each variable."),
+               tableOutput("randomForestVarImp"),
                value="datascience"
       ),
       tabPanel("Next Steps", 
-               h3("These are the next steps"),
+               p("For further info regarding Data Science, please contact:"),
+               p("Michael Natusch (mnatusch@gopivotal.com) - Data Science EMEA"),
+               p("Greg Whalen (gwhalen@gopivotal.com) - Data Science APJ"),
+               p("Alex Luttschyn (aluttschyn@gopivotal.com) - Data Science Americas"),
                value="nextsteps"
       ),
       id="panelchoice")

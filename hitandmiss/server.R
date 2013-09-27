@@ -151,7 +151,7 @@ shinyServer(function(input, output) {
   output$plotdatascienceclassification <- renderPlot({
     plotData <- dataset()
     
-    plotData$predictions <- eval(call(input$predictFcnName))
+    plotData$predictions <- eval(call(input$predictFcnName))[[1]]
     plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
     plotData$predictions <- ifelse(plotData$predictions,'black','Predict No Buy')
@@ -215,7 +215,7 @@ shinyServer(function(input, output) {
   output$dsconfusionMatrix <- renderTable({
     plotData <- dataset()
     
-    plotData$predictions <- eval(call(input$predictFcnName))
+    plotData$predictions <- eval(call(input$predictFcnName))[[1]]
     plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
     plotData$predictions <- ifelse(plotData$predictions,"Predict Buy","Predict No Buy")
@@ -227,7 +227,7 @@ shinyServer(function(input, output) {
   output$dsCostAnalysis <- renderTable({
     plotData <- dataset()
     
-    plotData$predictions <- eval(call(input$predictFcnName))
+    plotData$predictions <- eval(call(input$predictFcnName))[[1]]
     plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
     descriptions <- c("Budget spent on Marketing:",
@@ -275,17 +275,26 @@ shinyServer(function(input, output) {
   predictRandomForest <- reactive({
     library("randomForest")
     trainData <- traindataset()
-    trainData[,86] <- factor(trainData[,86])
+    #trainData[,86] <- factor(trainData[,86])
     
     posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
     negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
-    
+        
     rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior))
     print(rf)
     
     predictions <- predict(rf,dataset()[2:85],type='prob')[,2]
         
-    return(predictions)
+    return(list(predictions,rf))
+  })
+  
+  output$randomForestVarImp <- renderTable({
+    rf <- eval(call(input$predictFcnName))[[2]]
+    impVars <- importance(rf)[order(importance(rf),decreasing=T)[1:10],]
+    
+    impVarNames <- sapply(names(impVars),function(name) col_dict[which(names(dataset()) == name)])
+    
+    data.frame(row.names=impVarNames,Importance=impVars)
   })
   
 })
