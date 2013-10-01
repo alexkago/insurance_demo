@@ -14,7 +14,8 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     img(src='https://www.google.com/a/gopivotal.com/images/logo.gif?alpha=1&service=google_white'),
     conditionalPanel(
-      condition = "input.panelchoice != 'introduction' && input.panelchoice != 'nextsteps'",
+      condition = "input.panelchoice != 'introduction' && input.panelchoice != 'nextsteps' &&
+      input.panelchoice != 'modelexplanation'",
       h4("Select plot parameters:"),
       
       sliderInput('sampleSize', 'Sample Size', min=2500, max=nrow(dataset),
@@ -34,12 +35,12 @@ shinyUI(pageWithSidebar(
       conditionalPanel(
         condition = "input.panelchoice == 'marketing'",
         h4("Select and deselect customers groups:"),
-        checkboxInput('showSelectX','Show values of X dimension'),
+        checkboxInput('showSelectX','Show values of X dimension',value=T),
         conditionalPanel(
           condition = "input.showSelectX",
           uiOutput('selectXcontrols')
         ),
-        checkboxInput('showSelectY','Show values of Y dimension'),
+        checkboxInput('showSelectY','Show values of Y dimension',value=T),
         conditionalPanel(
           condition = "input.showSelectY",
           uiOutput('selectYcontrols')
@@ -111,7 +112,7 @@ shinyUI(pageWithSidebar(
                plotOutput("plotall"),
                value="all"
       ), 
-      tabPanel("Targeting by hand", 
+      tabPanel("Traditional Targeting", 
                h5("This tab allows you to select a group for insurance marketing manually."),
                p("The purpose of this tab is to give you the ability to select a target group for insurance marketing yourself. While doing
                  this, you can continually refine your hypothesis by looking at the dataset again and further select/deselect user groups. 
@@ -132,6 +133,10 @@ shinyUI(pageWithSidebar(
                tableOutput("mktCostAnalysis"),
                value="marketing"
       ), 
+      tabPanel("Model Explanations", 
+               h4("Model Explanations go here"),
+               value="modelexplanation"
+      ),
       tabPanel("Targeting with model support", 
                h4("When you first come on this page, the model will be trained. Please wait a few seconds for this to finish..."),
                p("A predictive model is being trained on this tab, to be able to predict which customers are likely to buy caravan insurance.
@@ -167,10 +172,12 @@ shinyUI(pageWithSidebar(
                value="datascience"
       ),
       tabPanel("Next Steps", 
-               p("For further info regarding Data Science, please contact:"),
-               p("Michael Natusch (mnatusch@gopivotal.com) - Data Science EMEA"),
-               p("Greg Whalen (gwhalen@gopivotal.com) - Data Science APJ"),
-               p("Alex Luttschyn (aluttschyn@gopivotal.com) - Data Science Americas"),
+               p("For further infor regarding this demo and Data Science, please contact:"),
+               p("Alexander Kagoshima - akagoshima@gopivotal.com"),
+#                p("For further info regarding this demo aData Science, please contact:"),
+#                p("Michael Natusch (mnatusch@gopivotal.com) - Data Science EMEA"),
+#                p("Greg Whalen (gwhalen@gopivotal.com) - Data Science APJ"),
+#                p("Alex Luttschyn (aluttschyn@gopivotal.com) - Data Science Americas"),
                value="nextsteps"
       ),
       id="panelchoice")

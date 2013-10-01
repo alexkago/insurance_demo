@@ -13,7 +13,7 @@ shinyServer(function(input, output) {
   
   output$plotall <- renderPlot({
     
-    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y))
+    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + theme(axis.text.x = element_text(angle = 40,hjust=1))
 
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
     
@@ -49,7 +49,7 @@ shinyServer(function(input, output) {
     
     plotData$comb_range <- factor(plotData$comb_range)
         
-    p <- ggplot(plotData, aes_string(x=input$x, y=input$y)) 
+    p <- ggplot(plotData, aes_string(x=input$x, y=input$y)) + theme(axis.text.x = element_text(angle = 40, hjust = 1))
     
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
 
@@ -116,7 +116,7 @@ shinyServer(function(input, output) {
                 length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
                 paste(round(realPot,digits=2),'%'),
                 paste(round(roi,digits=2),'%'))
-    data.frame(row.names=descriptions,Value=values)
+    data.frame(row.names=descriptions,Traditional.Targeting=values)
   })
   
 #   output$plotdatascience <- renderPlot({
@@ -159,7 +159,7 @@ shinyServer(function(input, output) {
                                    ifelse(plotData$CARAVAN == 1,'Correctly Predicted Buy','Incorrectly Predicted Buy'),
                                    plotData$predictions)
     
-    p <- ggplot(plotData, aes_string(x=input$x, y=input$y))
+    p <- ggplot(plotData, aes_string(x=input$x, y=input$y)) + theme(axis.text.x = element_text(angle = 40, hjust = 1))
     
     p <- p + xlab(col_dict[names(ticcompl) == input$x]) + ylab(col_dict[names(ticcompl) == input$y])
     
@@ -250,7 +250,34 @@ shinyServer(function(input, output) {
                 length(which(plotData$predictions & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
                 paste(round(realPot,digits=2),'%'),
                 paste(round(roi,digits=2),'%'))
-    data.frame(row.names=descriptions,Value=values)
+    
+    # Traditional Targeting
+    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
+    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
+    plotData$comb_range <- plotData$xrange & plotData$yrange
+    
+    succSpendTrad <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
+    realPotTrad <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
+    roiTrad <- ((length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn))/
+                  (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100
+    
+    valuesTrad <- c(length(which(plotData$comb_range))*as.numeric(input$mktCost),
+                    length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktCost),
+                    paste(round(succSpendTrad,digits=2),'%'),
+                    length(which(plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
+                    length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
+                    paste(round(realPotTrad,digits=2),'%'),
+                    paste(round(roiTrad,digits=2),'%'))
+
+    ratio <- c(round(as.numeric(values[1])/as.numeric(valuesTrad[1]),digits=2),
+               round(as.numeric(values[2])/as.numeric(valuesTrad[2]),digits=2),
+               round(succSpend/succSpendTrad,digits=2),
+               round(as.numeric(values[4])/as.numeric(valuesTrad[4]),digits=2),
+               round(as.numeric(values[5])/as.numeric(valuesTrad[5]),digits=2),
+               round(realPot/realPotTrad,digits=2),
+               round(roi/roiTrad,digits=2))
+    
+    data.frame(row.names=descriptions,Model.Targeting=values,Traditional.Targeting=valuesTrad, Ratio=ratio)
   })
   
   output$selectXcontrols <- renderUI({
