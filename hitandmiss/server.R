@@ -67,10 +67,8 @@ shinyServer(function(input, output) {
     } else {
       p <- p + geom_point(alpha=input$alphaStrength)
     }
-    #browser()
-    colorpalette <- c("Correctly Predicted Buy" = "green","Predict No Buy" = "grey","Incorrectly Predicted Buy" = "grey30")
+    
     p <- p + aes_string(color='comb_range') + scale_colour_manual(values = colorpalette)
-    #p <- p + theme(legend.position="none")
     
     print(p)
     
@@ -95,14 +93,6 @@ shinyServer(function(input, output) {
     plotData$xrange <- plotData[[input$x]] %in% input$selectedX
     plotData$yrange <- plotData[[input$y]] %in% input$selectedY
     plotData$comb_range <- plotData$xrange & plotData$yrange
-    
-    descriptions <- c("Budget spent on Marketing:",
-                      "Budget spent successfully:",
-                      "Successful Spending:",
-                      "Potential Return on Marketing:",
-                      "Return on Marketing:",
-                      "Realized Potential:",
-                      "ROI:")
     
     succSpend <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
     realPot <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
@@ -178,7 +168,6 @@ shinyServer(function(input, output) {
       p <- p + geom_point(alpha=input$alphaStrength)
     }
     
-    colorpalette <- c("Correctly Predicted Buy" = "green","Predict No Buy" = "grey","Incorrectly Predicted Buy" = "grey30")
     p <- p + aes_string(color='predictions') + scale_colour_manual(values = colorpalette)
     
     print(p)
@@ -229,14 +218,6 @@ shinyServer(function(input, output) {
     
     plotData$predictions <- eval(call(input$predictFcnName))[[1]]
     plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
-    
-    descriptions <- c("Budget spent on Marketing:",
-                      "Budget spent successfully:",
-                      "Successful Spending:",
-                      "Potential Return on Marketing:",
-                      "Return on Marketing:",
-                      "Realized Potential:",
-                      "ROI:")
     
     succSpend <- length(which(plotData$predictions & plotData$CARAVAN == 1))/length(which(plotData$predictions))*100
     realPot <- length(which(plotData$predictions & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100

@@ -1,6 +1,5 @@
 getData <- function() {
   # read in data
-  print(getwd())
   ticdata2000 <- read.table(sep='\t',file='data/ticdata2000.txt')
   ticeval2000 <- read.table(sep='\t',file='data/ticeval2000.txt')
   tictgts2000 <- read.table(sep='\t',file='data/tictgts2000.txt')
