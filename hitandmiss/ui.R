@@ -158,17 +158,34 @@ shinyUI(pageWithSidebar(
                #plotOutput("plotdatascience"),
                p("The below plot shows the classification of the customer base into buyers and non-buyers, based on the trained model and
                  the set classification cutoff on the left."),
-               plotOutput("plotdatascienceclassification"),
+               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating')",
+                                div(align="center",style="height: 400px",img(src="loading.gif"))),
+               conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating'))",
+                                plotOutput("plotdatascienceclassification")),
+               #conditionalPanel(condition="!($('div#baseline').text()=='' || $('html').hasClass('shiny-busy'))", br()),
+               #plotOutput("plotdatascienceclassification"),
                p("These are the financial results of the chosen target group selection based off the cost and return values supplied on the 
                  left."),
                #tableOutput("dsconfusionMatrix"),
-               tableOutput("dsCostAnalysis"),
+               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating')",
+                                div(align="center",img(src="loading.gif"))),
+               conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating'))",
+                                tableOutput("dsCostAnalysis")),
                #p("Plot of the F-score for different classifation cutoffs."),
                #plotOutput("plotperfcurve"),
                p("The table below should give you some intuition about what the trained model is doing. It shows how important each of the
                  shown variables is to the final model decision and shows the variables in decreasing order of importance. However, it does
                  not give information about what kind of value should be realized for each variable."),
-               tableOutput("randomForestVarImp"),
+               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating')",
+                                div(align="center",img(src="loading.gif"))),
+               conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating'))",
+                                tableOutput("randomForestVarImp")),
                value="datascience"
       ),
       tabPanel("Next Steps", 
