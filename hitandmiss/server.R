@@ -88,6 +88,13 @@ shinyServer(function(input, output) {
   })
   
   output$mktCostAnalysis <- renderTable({
+    values <- tradTargeting()
+    values[c(3,6,7)] <- paste(round(values[c(3,6,7)],digits=2),'%')
+    
+    data.frame(row.names=descriptions,Traditional.Targeting=values)
+  })
+  
+  tradTargeting <- reactive({
     plotData <- dataset()
     
     plotData$xrange <- plotData[[input$x]] %in% input$selectedX
@@ -97,16 +104,17 @@ shinyServer(function(input, output) {
     succSpend <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
     realPot <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
     roi <- ((length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn))/
-      (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100
+              (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100
     
     values <- c(length(which(plotData$comb_range))*as.numeric(input$mktCost),
                 length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktCost),
-                paste(round(succSpend,digits=2),'%'),
+                succSpend,
                 length(which(plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
                 length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
-                paste(round(realPot,digits=2),'%'),
-                paste(round(roi,digits=2),'%'))
-    data.frame(row.names=descriptions,Traditional.Targeting=values)
+                realPot,
+                roi)
+    
+    return(values)
   })
   
 #   output$plotdatascience <- renderPlot({
@@ -142,7 +150,6 @@ shinyServer(function(input, output) {
     plotData <- dataset()
     
     plotData$predictions <- eval(call(input$predictFcnName))[[1]]
-    plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
     plotData$predictions <- ifelse(plotData$predictions,'black','Predict No Buy')
     plotData$predictions <- ifelse(plotData$predictions == 'black',
@@ -205,7 +212,6 @@ shinyServer(function(input, output) {
     plotData <- dataset()
     
     plotData$predictions <- eval(call(input$predictFcnName))[[1]]
-    plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
     plotData$predictions <- ifelse(plotData$predictions,"Predict Buy","Predict No Buy")
     plotData$CARAVAN <- ifelse(plotData$CARAVAN == 0,"Actual No Buy","Actual Buy")
@@ -217,47 +223,31 @@ shinyServer(function(input, output) {
     plotData <- dataset()
     
     plotData$predictions <- eval(call(input$predictFcnName))[[1]]
-    plotData$predictions <- ifelse(plotData$predictions < input$classCutoff^2,FALSE,TRUE)
     
-    succSpend <- length(which(plotData$predictions & plotData$CARAVAN == 1))/length(which(plotData$predictions))*100
-    realPot <- length(which(plotData$predictions & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
-    roi <- ((length(which(plotData$predictions & plotData$CARAVAN == 1))*as.numeric(input$mktReturn))/
-      (length(which(plotData$predictions))*as.numeric(input$mktCost)))*100
+    nPredictions <- length(which(plotData$predictions))
+    nSuccPredictions <- length(which(plotData$predictions & plotData$CARAVAN == 1))
+    nInsurances <- length(which(plotData$CARAVAN == 1))
     
-    values <- c(length(which(plotData$predictions))*as.numeric(input$mktCost),
-                length(which(plotData$predictions & plotData$CARAVAN == 1))*as.numeric(input$mktCost),
-                paste(round(succSpend,digits=2),'%'),
-                length(which(plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
-                length(which(plotData$predictions & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
-                paste(round(realPot,digits=2),'%'),
-                paste(round(roi,digits=2),'%'))
+    succSpend <- nSuccPredictions/nPredictions*100
+    realPot <- nSuccPredictions/nInsurances*100
+    roi <- (nSuccPredictions*as.numeric(input$mktReturn)*100)/(nPredictions*as.numeric(input$mktCost))
+    
+    values <- c(nPredictions*as.numeric(input$mktCost),
+                nSuccPredictions*as.numeric(input$mktCost),
+                succSpend,
+                nInsurances*as.numeric(input$mktReturn),
+                nSuccPredictions*as.numeric(input$mktReturn),
+                realPot,
+                roi)
     
     # Traditional Targeting
-    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
-    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
-    plotData$comb_range <- plotData$xrange & plotData$yrange
+    valuesTrad <- tradTargeting()
     
-    succSpendTrad <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
-    realPotTrad <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
-    roiTrad <- ((length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn))/
-                  (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100
-    
-    valuesTrad <- c(length(which(plotData$comb_range))*as.numeric(input$mktCost),
-                    length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktCost),
-                    paste(round(succSpendTrad,digits=2),'%'),
-                    length(which(plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
-                    length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn),
-                    paste(round(realPotTrad,digits=2),'%'),
-                    paste(round(roiTrad,digits=2),'%'))
+    ratio <- values/valuesTrad
+    ratio <- round(ratio,digits=2)
+    values[c(3,6,7)] <- paste(round(values[c(3,6,7)],digits=2),'%')
+    valuesTrad[c(3,6,7)] <- paste(round(valuesTrad[c(3,6,7)],digits=2),'%')
 
-    ratio <- c(round(as.numeric(values[1])/as.numeric(valuesTrad[1]),digits=2),
-               round(as.numeric(values[2])/as.numeric(valuesTrad[2]),digits=2),
-               round(succSpend/succSpendTrad,digits=2),
-               round(as.numeric(values[4])/as.numeric(valuesTrad[4]),digits=2),
-               round(as.numeric(values[5])/as.numeric(valuesTrad[5]),digits=2),
-               round(realPot/realPotTrad,digits=2),
-               round(roi/roiTrad,digits=2))
-    
     data.frame(row.names=descriptions,Model.Targeting=values,Traditional.Targeting=valuesTrad, Ratio=ratio)
   })
   
@@ -281,28 +271,64 @@ shinyServer(function(input, output) {
   })
   
   predictRandomForest <- reactive({
+    rf <- trainRandomForest()
+    print(rf)
+    
+    predictions <- predict(rf,dataset()[,2:85],type='prob')[,2]
+    predictions <- ifelse(predictions < input$classCutoff^2,FALSE,TRUE)
+        
+    return(list(predictions,rf))
+  })
+  
+  trainRandomForest <- reactive({
     library("randomForest")
     trainData <- traindataset()
     #trainData[,86] <- factor(trainData[,86])
     
     posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
     negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
-        
-    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior))
-    print(rf)
     
-    predictions <- predict(rf,dataset()[2:85],type='prob')[,2]
-        
-    return(list(predictions,rf))
+    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior))
+    
+    return(rf)
+  })
+  
+  predictLogisticRegression <- reactive({
+    glmmodel <- trainLogisticRegression()
+    Xtest <- model.matrix(CARAVAN ~ . , data=dataset())
+    predictions <- predict(glmmodel,Xtest,type='response')
+    predictions <- as.vector(predictions)
+    predictions <- ifelse(predictions < input$classCutoffLR,FALSE,TRUE)
+    
+    return(list(predictions,glmmodel))
+  })
+  
+  trainLogisticRegression <- reactive({
+    library("glmnet")
+    trainData <- traindataset()
+    #trainData[,86] <- factor(trainData[,86])
+    
+    posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
+    negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
+    weightvec <- ifelse(trainData[,86] == 0,posPrior,negPrior)
+    
+    X <- model.matrix(CARAVAN ~ . , data=trainData)
+    glmmodel <- cv.glmnet(x=X,y=trainData[,86],family="binomial",nfolds=3,weights=weightvec)
+    
+    return(glmmodel)
   })
   
   output$randomForestVarImp <- renderTable({
-    rf <- eval(call(input$predictFcnName))[[2]]
-    impVars <- importance(rf)[order(importance(rf),decreasing=T)[1:10],]
-    
-    impVarNames <- sapply(names(impVars),function(name) col_dict[which(names(dataset()) == name)])
-    
-    data.frame(row.names=impVarNames,Importance=impVars)
+    if (input$predictFcnName == "predictRandomForest") {
+      rf <- eval(call(input$predictFcnName))[[2]]
+      impVars <- importance(rf)[order(importance(rf),decreasing=T)[1:10],]
+      
+      impVarNames <- sapply(names(impVars),function(name) col_dict[which(names(dataset()) == name)])
+      
+      data.frame(row.names=impVarNames,Importance=impVars)
+    } else {
+      data.frame()
+    }
   })
   
 })

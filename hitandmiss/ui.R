@@ -28,7 +28,7 @@ shinyUI(pageWithSidebar(
         selectInput('color', 'Color', c('None', value_names))
       ),
       
-      sliderInput('alphaStrength', 'Opacity', min=0, max=1, value=1, step=0.05, round=F),
+      sliderInput('alphaStrength', 'Transparency', min=0, max=1, value=1, step=0.05, round=F),
       
       sliderInput('jitterStrength', 'Jitter', min=0, max=5, value=2, step=0.1, round=F),
       
@@ -50,8 +50,15 @@ shinyUI(pageWithSidebar(
         condition = "input.panelchoice == 'datascience'",
         h4("Select predictive algorithm:"),
         selectInput('predictFcnName', 'Choose Predictive Algorithm', c("Random Forest" = "predictRandomForest", 
-                                                                       "Logistic Regression" = "logisticRegression")),
-        sliderInput('classCutoff', 'Classification Cutoff', min=0, max=0.5, value=0.1, step=0.001, round=F)
+                                                                       "Logistic Regression" = "predictLogisticRegression")),
+        conditionalPanel(
+          condition = "input.predictFcnName == 'predictRandomForest'",
+          sliderInput('classCutoff', 'Classification Cutoff', min=0, max=0.5, value=0.1, step=0.001, round=F)
+        ),
+        conditionalPanel(
+          condition = "input.predictFcnName == 'predictLogisticRegression'",
+          sliderInput('classCutoffLR', 'Classification Cutoff', min=0, max=1, value=0.5, step=0.01, round=F)
+        )
       ),
       conditionalPanel(
         condition = "input.panelchoice == 'datascience' || input.panelchoice == 'marketing'",
@@ -111,7 +118,7 @@ shinyUI(pageWithSidebar(
                     <li>You can also select both <strong>X and Y axes</strong> of the plot below on the left.</li>
                     <li>You can display a third variable by changing the <strong>'Color'</strong> option on the left , which will color the points
                         in the plot according to this variable.</li>
-                    <li>The <strong>'Opacity'</strong> allows you to change the transparency of points, to make overlapping points visible.</li>
+                    <li>The <strong>'Transparency'</strong> allows you to change the transparency of points, to make overlapping points visible.</li>
                     <li>With <strong>'Jitter'</strong> you can introduce some random displacement into the plot, also to avoid overlapping points.</li>
                   </ul>")),
                p(strong("Tip:"),"You could already start looking for interesting customer
@@ -168,7 +175,7 @@ shinyUI(pageWithSidebar(
                  we have ",strong("external data"),", which in this demo is information about the ",strong("demographics in his zip code"),".
                  It could also be
                  data from social networks, for example. This external data is what allows the model to make good predictions, since
-                 this data contains a lot more information about the customer than the insurance company's data."),
+                 this data contains a lot more information about the customer than the insurance company's data alone."),
                h4("Instructions"),
                p(HTML("
                   <ul>
@@ -211,15 +218,16 @@ shinyUI(pageWithSidebar(
                explanationsList,
                #p("Plot of the F-score for different classifation cutoffs."),
                #plotOutput("plotperfcurve"),
-               h4("Model Details"),
-               p("The table below should give you some intuition about what the trained model is doing. It shows how important each of the
+               conditionalPanel(condition="input.predictFcnName == 'predictRandomForest'",
+                                h4("Model Details"),
+                                p("The table below should give you some intuition about what the trained model is doing. It shows how important each of the
                  shown variables is to the final model decision and shows the variables in decreasing order of importance."),
-               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+                                conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
                                            $('div#plotdatascienceclassification').hasClass('recalculating')",
-                                div(align="center",img(src="loading.gif"))),
-               conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
+                                                 div(align="center",img(src="loading.gif"))),
+                                conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
                                            $('div#plotdatascienceclassification').hasClass('recalculating'))",
-                                tableOutput("randomForestVarImp")),
+                                                 tableOutput("randomForestVarImp"))),
                value="datascience"
       ),
       tabPanel("Next Steps", 
