@@ -157,7 +157,37 @@ shinyUI(pageWithSidebar(
                value="marketing"
       ), 
       tabPanel("Model Explanations", 
-               h4("Model Explanations go here"),
+               p("In this demo, you can choose two different Machine Learning models for predicting new insurance customers. While there 
+                 are certainly a lot more possibilities for other predictive models, we chose these two models because they are very 
+                 popular in the Machine Learning community and relatively easy to understand, compared to other model choices."),
+               h4("Random Forest"),
+               p("The Random Forest algorithm has a name that is derived from its structure: It is built up by a large group of 
+                 decision trees. A decision tree is a model with a tree-like structure that branches out at every node. On each of these
+                 nodes, a decision is made about a particular customer's information, e.g. his age or his marital status. Going through
+                 the tree essentially means answering a few question about a particular customer. After you went through these questions,
+                 you end up at a leaf node, which gives you a probability of what kind of classification you should make. The following
+                 picture illustrates this explanation:"),
+               img(src="decisiontree.png"),
+               p("What gives the Random Forest algorithm its predictive power is the combination of many decision trees. One decision tree
+                 by itself is a very rough separation of data points into two groups. However, if you have an ensemble of decision trees,
+                 it is possible
+                 to simulate a probabilistic separation, by taking the fraction of the classifications produced by these decision trees."),
+               img(src="randomforest.jpg"),
+               p("Random Forests were the winning algorithm in a lot of Kaggle competitions. For further information regarding random
+                 forests, please look at",a(href="http://en.wikipedia.org/wiki/Random_forest","the very good Wikipedia article.")),
+               h4("Logistic Regression"),
+               p("The Logistic Regression model is a lot simpler than a Random Forest, since it is linear in its parameters. A Random Forest
+                 can fit non-linear relationships within the data easily, but a Logistic Regression model can only have a good fit on much
+                 simpler relationships within the data. However, it is always worthwile to try this kind of model because linear
+                 relationships are predominant in a lot of datasets."),
+               p("Logistic Regression is conceptually very similar to Linear Regression. It forms a linear hypothesis based on the
+                 parameters. The difference in logistic regression is, the linear hypothesis becomes transformed by the logistic function:"),
+               img(src="LogReg.png"),
+               p("The Logistic Function projects the output of the linear hypotheses onto the [0,1] range. The goal of a logistic regression
+                 is usually to classify data points into two classes, where 0 would be one class and 1 the other. If a data point is being 
+                 projected onto the [0,1] range, this can be interpreted as a probability for the data point belonging to class 1."),
+               p("For more information about Logistic Regression, please consider the",
+                 a(href="http://en.wikipedia.org/wiki/Decision_tree_learning","Wikipedia article"),"."),
                value="modelexplanation"
       ),
       tabPanel("Targeting with model support", 
@@ -180,8 +210,7 @@ shinyUI(pageWithSidebar(
                p(HTML("
                   <ul>
                     <li>On the left hand side you can control the <strong>plot parameters</strong> like in previous tabs.</li>
-                    <li>Below this, you can select what kind of <strong>predictive algorithm</strong> you want to train (for now, the only option 
-                        is the 'Random Forest' algorithm).</li>
+                    <li>Below this, you can select what kind of <strong>predictive algorithm</strong> you want to train.</li>
                     <li>After the Machine Learning model is trained, you have the possibility to change the <strong>'Classification Cutoff'</strong> 
                         of the model, to adjust how sensitive the trained model is in predicting insurance customers: If you set a 
                         <strong>low cutoff</strong>, you will see <strong>more predicted buyers</strong>, with a <strong>high cutoff</strong> the 
@@ -231,8 +260,26 @@ shinyUI(pageWithSidebar(
                value="datascience"
       ),
       tabPanel("Next Steps", 
-               p("For further infor regarding this demo and Data Science, please contact:"),
-               p("Alexander Kagoshima - akagoshima@gopivotal.com"),
+               h4("Future Development"),
+               p("There are several possibilities how this demo could be extended:"),
+               p(HTML("
+                  <ul>
+                    <li>Try using more external data sources, e.g. Social Media Data.</li>
+                    <li>Use a Pivotal platform in the backend to accelerate the model training and scoring, even on Big Data.</li>
+                    <li></li>
+                  </ul>")),
+               h4("Operationalization Scenario"),
+               p("Machine Learning models for marketing could be operationalized in different ways:"),
+               p(HTML("
+                  <ul>
+                    <li>Use this model to choose a target group for marketing.</li>
+                    <li>Find customers which have a high probability to be interested. Use direct methods to approach these customers.</li>
+                    <li>Learn about important factors that determine a customer's interest.</li>
+                    <li>
+                  </ul>")),
+               h4("Further Information"),
+               p("For further information regarding this demo and Data Science, please contact:"),
+               p("Alexander Kagoshima -", a(href="mailto:akagoshima@gopivotal.com",'akagoshima@gopivotal.com')),
 #                p("For further info regarding this demo aData Science, please contact:"),
 #                p("Michael Natusch (mnatusch@gopivotal.com) - Data Science EMEA"),
 #                p("Greg Whalen (gwhalen@gopivotal.com) - Data Science APJ"),
