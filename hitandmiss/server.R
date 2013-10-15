@@ -104,7 +104,7 @@ shinyServer(function(input, output) {
     succSpend <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
     realPot <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
     roi <- ((length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktReturn))/
-              (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100
+              (length(which(plotData$comb_range))*as.numeric(input$mktCost)))*100-100
     
     values <- c(length(which(plotData$comb_range))*as.numeric(input$mktCost),
                 length(which(plotData$comb_range & plotData$CARAVAN == 1))*as.numeric(input$mktCost),
@@ -230,7 +230,7 @@ shinyServer(function(input, output) {
     
     succSpend <- nSuccPredictions/nPredictions*100
     realPot <- nSuccPredictions/nInsurances*100
-    roi <- (nSuccPredictions*as.numeric(input$mktReturn)*100)/(nPredictions*as.numeric(input$mktCost))
+    roi <- (nSuccPredictions*as.numeric(input$mktReturn)*100)/(nPredictions*as.numeric(input$mktCost))-100
     
     values <- c(nPredictions*as.numeric(input$mktCost),
                 nSuccPredictions*as.numeric(input$mktCost),

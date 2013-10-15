@@ -264,18 +264,20 @@ shinyUI(pageWithSidebar(
                p("There are several possibilities how this demo could be extended:"),
                p(HTML("
                   <ul>
-                    <li>Try using more external data sources, e.g. Social Media Data.</li>
-                    <li>Use a Pivotal platform in the backend to accelerate the model training and scoring, even on Big Data.</li>
-                    <li></li>
+                    <li>Add Social Media Data as an external data source.</li>
+                    <li>Take Open Data by government data into account.</li>
+                    <li>Use a Pivotal platform in the backend to accelerate the model training and scoring, even on Tera- and Petabyte scales of data.</li>
+                    <li>Use more advanced Machine Learning models.</li>
+                    <li>Collect temporal data on insurance policies and see shifts and trends in customers' interests.</li>
                   </ul>")),
                h4("Operationalization Scenario"),
-               p("Machine Learning models for marketing could be operationalized in different ways:"),
+               p("Machine Learning models for marketing could be operationalized in multiple ways:"),
                p(HTML("
                   <ul>
-                    <li>Use this model to choose a target group for marketing.</li>
-                    <li>Find customers which have a high probability to be interested. Use direct methods to approach these customers.</li>
-                    <li>Learn about important factors that determine a customer's interest.</li>
-                    <li>
+                    <li>Use this model to choose an optimal target group for marketing.</li>
+                    <li>Find customers which have a high probability to be interested.</li>
+                    <li>Differentiate marketing campaigns by the predicted level of interest.</li>
+                    <li>Learn about important factors that determine a customer's interest. This could influence product development itself.</li>
                   </ul>")),
                h4("Further Information"),
                p("For further information regarding this demo and Data Science, please contact:"),
