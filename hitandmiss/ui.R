@@ -35,16 +35,56 @@ shinyUI(pageWithSidebar(
       conditionalPanel(
         condition = "input.panelchoice == 'marketing'",
         h4("Select and deselect customers groups:"),
-        checkboxInput('showSelectX','Show values of X dimension',value=T),
+        selectInput('dim1', 'Variable 1', c('',value_names)),
         conditionalPanel(
-          condition = "input.showSelectX",
-          uiOutput('selectXcontrols')
+          condition = "input.dim1 != ''",
+          uiOutput('selectDim1controls')
         ),
-        checkboxInput('showSelectY','Show values of Y dimension',value=T),
+        selectInput('dim2', 'Variable 2', c('',value_names)),
         conditionalPanel(
-          condition = "input.showSelectY",
-          uiOutput('selectYcontrols')
+          condition = "input.dim2 != ''",
+          uiOutput('selectDim2controls')
+        ),
+        selectInput('dim3', 'Variable 3', c('',value_names)),
+        conditionalPanel(
+          condition = "input.dim3 != ''",
+          uiOutput('selectDim3controls')
+        ),
+        selectInput('dim4', 'Variable 4', c('',value_names)),
+        conditionalPanel(
+          condition = "input.dim4 != ''",
+          uiOutput('selectDim4controls')
+        ),
+        selectInput('dim5', 'Variable 5', c('',value_names)),
+        conditionalPanel(
+          condition = "input.dim5 != ''",
+          uiOutput('selectDim5controls')
         )
+#         selectInput('dim6', 'Variable 6', c('',value_names)),
+#         conditionalPanel(
+#           condition = "input.dim6 != ''",
+#           uiOutput('selectDim6controls')
+#         ),
+#         selectInput('dim7', 'Variable 7', c('',value_names)),
+#         conditionalPanel(
+#           condition = "input.dim7 != ''",
+#           uiOutput('selectDim7controls')
+#         ),
+#         selectInput('dim8', 'Variable 8', c('',value_names)),
+#         conditionalPanel(
+#           condition = "input.dim8 != ''",
+#           uiOutput('selectDim8controls')
+#         ),
+#         selectInput('dim9', 'Variable 9', c('',value_names)),
+#         conditionalPanel(
+#           condition = "input.dim9 != ''",
+#           uiOutput('selectDim9controls')
+#         ),
+#         selectInput('dim10', 'Variable 10', c('',value_names)),
+#         conditionalPanel(
+#           condition = "input.dim10 != ''",
+#           uiOutput('selectDim10controls')
+#         )
       ),
       conditionalPanel(
         condition = "input.panelchoice == 'datascience'",
@@ -138,13 +178,13 @@ shinyUI(pageWithSidebar(
                   <ul>
                     <li>On the left hand side you can control the <strong>plot parameters</strong> like in the previous tab.</li>
                     <li>Below the plot parameters, it is possible to <strong>select and deselect customer groups for your marketing target group</strong>.
-                        You can restrict the target group in the same dimensions that are currently visible on the plot.</li>
+                        You can restrict the target group in 5 variables.</li>
                     <li>To assign a concrete dollar value to your marketing success, you can assign a <strong>cost to your marketing</strong> 
                         campaign as well as a <strong>return for every new customer</strong> for the new caravan insurance. The results based off 
                         these numbers are shown below the plot. This will influence the financial result shown in the table below the plot.</li>
                   </ul>")),
-               p(strong("Tip:"),"You should try to find relevant dimensions for the plot first, which show a clear separability of buyers and non-buyers of
-                 the caravan insurance. After you found two dimensions, you can select the customer groups for marketing. ",strong("Initially, all 
+               p(strong("Tip:"),"You should try to find relevant variables for the plot first, which show a clear separability of buyers and non-buyers of
+                 the caravan insurance. After you found these variables, you can select the customer groups for marketing. ",strong("Initially, all 
                  customers are selected,"),"which means we will market caravan insurance to everyone. Deselect groups that you think will 
                  not buy caravan insurance."),
                h4("Results"),
@@ -197,7 +237,7 @@ shinyUI(pageWithSidebar(
                h4("Background"),
                p("On this tab, a Machine Learning model is being trained that predicts which customers are likely to buy caravan insurance.
                  After the model has finished training, you can see an output of the model decision in the plot below. Keep in mind, that
-                 with this approach, you're not only limited to two variables, instead the model looks at all variables simultaneously. Below
+                 with this approach, you're not only limited to five variables, instead the model looks at all variables simultaneously. Below
                  the plot you have the additional information what the financial performance of the model is with your chosen cost and return
                  values and furthermore, which variables are of high importance to the trained model"),
                p(strong("Note:"),"Remember that the data we have on the customers does not come from the insurance company only (which is only his 
@@ -257,6 +297,16 @@ shinyUI(pageWithSidebar(
                                 conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
                                            $('div#plotdatascienceclassification').hasClass('recalculating'))",
                                                  tableOutput("randomForestVarImp"))),
+#                conditionalPanel(condition="input.predictFcnName == 'predictLogisticRegression'",
+#                                 h4("Model Details"),
+#                                 p("The table below should give you some intuition about what the trained model is doing. It shows how the coefficients
+#                                   of the linear model learned by linear regression."),
+#                                 conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+#                                            $('div#plotdatascienceclassification').hasClass('recalculating')",
+#                                                  div(align="center",img(src="loading.gif"))),
+#                                 conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
+#                                            $('div#plotdatascienceclassification').hasClass('recalculating'))",
+#                                                  tableOutput("logisticRegressionCoeff"))),
                value="datascience"
       ),
       tabPanel("Next Steps", 

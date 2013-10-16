@@ -37,11 +37,8 @@ shinyServer(function(input, output) {
   })
   
   output$plotmarketing <- renderPlot({
-    plotData <- dataset()
+    plotData <- selectedData()
     
-    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
-    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
-    plotData$comb_range <- plotData$xrange & plotData$yrange
     plotData$comb_range <- ifelse(plotData$comb_range,'black','Predict No Buy')
     plotData$comb_range <- ifelse(plotData$comb_range == 'black',
                                   ifelse(plotData$CARAVAN == 1,'Correctly Predicted Buy','Incorrectly Predicted Buy'),
@@ -75,11 +72,7 @@ shinyServer(function(input, output) {
   })
   
   output$mktconfusionMatrix <- renderTable({
-    plotData <- dataset()
-        
-    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
-    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
-    plotData$comb_range <- plotData$xrange & plotData$yrange
+    plotData <- selectedData()
     
     plotData$comb_range <- ifelse(plotData$comb_range,"Predict Buy","Predict No Buy")
     plotData$CARAVAN <- ifelse(plotData$CARAVAN == 0,"Actual No Buy","Actual Buy")
@@ -95,11 +88,7 @@ shinyServer(function(input, output) {
   })
   
   tradTargeting <- reactive({
-    plotData <- dataset()
-    
-    plotData$xrange <- plotData[[input$x]] %in% input$selectedX
-    plotData$yrange <- plotData[[input$y]] %in% input$selectedY
-    plotData$comb_range <- plotData$xrange & plotData$yrange
+    plotData <- selectedData()
     
     succSpend <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
     realPot <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
@@ -270,6 +259,96 @@ shinyServer(function(input, output) {
     checkboxGroupInput("selectedY", "Select Y Values", choices, selected = choices)
   })
   
+  output$selectDim1controls <- renderUI({
+    if (is.factor(dataset()[[input$dim1]]))
+      choices <- levels(dataset()[[input$dim1]])
+    else
+      choices <- sort(unique(dataset()[[input$dim1]]))
+    
+    checkboxGroupInput("selectedDim1", "Select Variable 1 Values", choices, selected = choices)
+  })
+  
+  output$selectDim2controls <- renderUI({
+    if (is.factor(dataset()[[input$dim2]]))
+      choices <- levels(dataset()[[input$dim2]])
+    else
+      choices <- sort(unique(dataset()[[input$dim2]]))
+    
+    checkboxGroupInput("selectedDim2", "Select Variable 2 Values", choices, selected = choices)
+  })
+  
+  output$selectDim3controls <- renderUI({
+    if (is.factor(dataset()[[input$dim3]]))
+      choices <- levels(dataset()[[input$dim3]])
+    else
+      choices <- sort(unique(dataset()[[input$dim3]]))
+    
+    checkboxGroupInput("selectedDim3", "Select Variable 3 Values", choices, selected = choices)
+  })
+  
+  output$selectDim4controls <- renderUI({
+    if (is.factor(dataset()[[input$dim4]]))
+      choices <- levels(dataset()[[input$dim4]])
+    else
+      choices <- sort(unique(dataset()[[input$dim4]]))
+    
+    checkboxGroupInput("selectedDim4", "Select Variable 4 Values", choices, selected = choices)
+  })
+  
+  output$selectDim5controls <- renderUI({
+    if (is.factor(dataset()[[input$dim5]]))
+      choices <- levels(dataset()[[input$dim5]])
+    else
+      choices <- sort(unique(dataset()[[input$dim5]]))
+    
+    checkboxGroupInput("selectedDim5", "Select Variable 5 Values", choices, selected = choices)
+  })
+  
+  output$selectDim6controls <- renderUI({
+    if (is.factor(dataset()[[input$dim6]]))
+      choices <- levels(dataset()[[input$dim6]])
+    else
+      choices <- sort(unique(dataset()[[input$dim6]]))
+    
+    checkboxGroupInput("selectedDim6", "Select Variable 6 Values", choices, selected = choices)
+  })
+  
+  output$selectDim7controls <- renderUI({
+    if (is.factor(dataset()[[input$dim7]]))
+      choices <- levels(dataset()[[input$dim7]])
+    else
+      choices <- sort(unique(dataset()[[input$dim7]]))
+    
+    checkboxGroupInput("selectedDim7", "Select Variable 7 Values", choices, selected = choices)
+  })
+  
+  output$selectDim8controls <- renderUI({
+    if (is.factor(dataset()[[input$dim8]]))
+      choices <- levels(dataset()[[input$dim8]])
+    else
+      choices <- sort(unique(dataset()[[input$dim8]]))
+    
+    checkboxGroupInput("selectedDim8", "Select Variable 8 Values", choices, selected = choices)
+  })
+  
+  output$selectDim9controls <- renderUI({
+    if (is.factor(dataset()[[input$dim9]]))
+      choices <- levels(dataset()[[input$dim9]])
+    else
+      choices <- sort(unique(dataset()[[input$dim9]]))
+    
+    checkboxGroupInput("selectedDim9", "Select Variable 9 Values", choices, selected = choices)
+  })
+  
+  output$selectDim10controls <- renderUI({
+    if (is.factor(dataset()[[input$dim10]]))
+      choices <- levels(dataset()[[input$dim10]])
+    else
+      choices <- sort(unique(dataset()[[input$dim10]]))
+    
+    checkboxGroupInput("selectedDim10", "Select Variable 10 Values", choices, selected = choices)
+  })
+  
   predictRandomForest <- reactive({
     rf <- trainRandomForest()
     print(rf)
@@ -318,6 +397,66 @@ shinyServer(function(input, output) {
     return(glmmodel)
   })
   
+  selectedData <- reactive({
+    plotData <- dataset()
+    
+    if (input$dim1 == '') 
+      plotData$dim1range <- T
+    else
+      plotData$dim1range <- plotData[[input$dim1]] %in% input$selectedDim1
+    
+    if (input$dim2 == '') 
+      plotData$dim2range <- T
+    else
+      plotData$dim2range <- plotData[[input$dim2]] %in% input$selectedDim2
+    
+    if (input$dim3 == '') 
+      plotData$dim3range <- T
+    else
+      plotData$dim3range <- plotData[[input$dim3]] %in% input$selectedDim3
+    
+    if (input$dim4 == '') 
+      plotData$dim4range <- T
+    else
+      plotData$dim4range <- plotData[[input$dim4]] %in% input$selectedDim4
+    
+    if (input$dim5 == '') 
+      plotData$dim5range <- T
+    else
+      plotData$dim5range <- plotData[[input$dim5]] %in% input$selectedDim5
+    
+#     if (input$dim6 == '') 
+#       plotData$dim6range <- T
+#     else
+#       plotData$dim6range <- plotData[[input$dim6]] %in% input$selectedDim6
+#     
+#     if (input$dim7 == '') 
+#       plotData$dim7range <- T
+#     else
+#       plotData$dim7range <- plotData[[input$dim7]] %in% input$selectedDim7
+#     
+#     if (input$dim8 == '') 
+#       plotData$dim8range <- T
+#     else
+#       plotData$dim8range <- plotData[[input$dim8]] %in% input$selectedDim8
+#     
+#     if (input$dim9 == '') 
+#       plotData$dim9range <- T
+#     else
+#       plotData$dim9range <- plotData[[input$dim9]] %in% input$selectedDim9
+#     
+#     if (input$dim10 == '') 
+#       plotData$dim10range <- T
+#     else
+#       plotData$dim10range <- plotData[[input$dim10]] %in% input$selectedDim10
+    
+    plotData$comb_range <- plotData$dim1range & plotData$dim2range & plotData$dim3range & 
+      plotData$dim4range & plotData$dim5range
+        #& plotData$dim7range & plotData$dim8range & plotData$dim9range & plotData$dim10range
+    
+    return(plotData)
+  })
+  
   output$randomForestVarImp <- renderTable({
     if (input$predictFcnName == "predictRandomForest") {
       rf <- eval(call(input$predictFcnName))[[2]]
@@ -330,5 +469,15 @@ shinyServer(function(input, output) {
       data.frame()
     }
   })
+  
+#   output$logisticRegressionCoeff <- renderTable({
+#     if (input$predictFcnName == "predictLogisticRegression") {
+#       logreg <- eval(call(input$predictFcnName))[[2]]
+#       browser()
+#       data.frame(row.names=impVarNames,Importance=impVars)
+#     } else {
+#       data.frame()
+#     }
+#   })
   
 })
