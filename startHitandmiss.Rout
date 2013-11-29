@@ -1,0 +1,78 @@
+
+R version 3.0.1 (2013-05-16) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin12.4.1 (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+[Vorher gesicherter Workspace wiederhergestellt]
+
+> library('shiny')
+> library('ggplot2')
+> 
+> source('getData.R')
+> 
+> ticcompl <- assignLevels(getData())
+Warnmeldung:
+In `levels<-`(`*tmp*`, value = if (nl == nL) as.character(labels) else paste0(labels,  :
+  duplicated levels in factors are deprecated
+> 
+> descriptions <- c("Budget spent on Marketing:",
++                   "Budget spent successfully:",
++                   "Successful Spend Percent:",
++                   "Potential Return:",
++                   "Realized Return:",
++                   "Realized Potential Percent:",
++                   "ROI:")
+> 
+> colorpalette <- c("Correctly Predicted Buy" = "green","Predict No Buy" = "grey","Incorrectly Predicted Buy" = "grey30")
+> 
+> explanationsList <- p(HTML("
++                 <ul>
++                   <li><strong>Budget spent on Marketing</strong>: Number of targeted customers * the marketing cost specified on the left.</li>
++                   <li><strong>Budget spent successfully</strong>: Budget spent on customers that are responding to the offer.</li>
++                   <li><strong>Successful Spend Percent</strong>: Ratio of 'Budget spent successfully' and 'Budget spent on Marketing'.</li>
++                   <li><strong>Potential Return</strong>: Possible profit if every interested customer gets an offer. Based off the 'Return on 
++                                                           new customer' value specified on the left.</li>
++                   <li><strong>Realized Return</strong>: Realized profit, calculated by interested customers that were actually reached *
++                                                         the 'Return on new customer' value specified on the left.</li>
++                   <li><strong>Realized Potential Percent</strong>: Ratio of Realized Return and Potential Return</li>
++                   <li><strong>ROI</strong>: Ratio of 'Realized Return' and 'Budget spent on Marketing', expressed as percentage. 100% means the
++                                             marketing cost was covered.</li>
++                 </ul>"))
+> 
+> runApp('hitandmiss')
+
+Listening on port 8100
+Warnung in is.na(x) :
+  is.na() auf nicht-(Liste oder Vektor) des Typs 'NULL' angewendet
+Error in names(choices) <- choiceNames : 
+  Versuch ein Attribut von NULL zu setzen
+Warnung in is.na(x) :
+  is.na() auf nicht-(Liste oder Vektor) des Typs 'NULL' angewendet
+Error in names(choices) <- choiceNames : 
+  Versuch ein Attribut von NULL zu setzen
+Warnung in is.na(x) :
+  is.na() auf nicht-(Liste oder Vektor) des Typs 'NULL' angewendet
+Error in names(choices) <- choiceNames : 
+  Versuch ein Attribut von NULL zu setzen
+Warnung in is.na(x) :
+  is.na() auf nicht-(Liste oder Vektor) des Typs 'NULL' angewendet
+Error in names(choices) <- choiceNames : 
+  Versuch ein Attribut von NULL zu setzen
+Warnung in is.na(x) :
+  is.na() auf nicht-(Liste oder Vektor) des Typs 'NULL' angewendet
+Error in names(choices) <- choiceNames : 
+  Versuch ein Attribut von NULL zu setzen
+
+Ausführung angehalten

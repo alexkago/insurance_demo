@@ -1,0 +1,6 @@
+system('wget http://cran.r-project.org/src/contrib/Archive/Rcpp/Rcpp_0.10.4.tar.gz')
+system('R CMD INSTALL -c Rcpp_0.10.4.tar.gz')
+system('rm Rcpp_0.10.4.tar.gz')
+install.packages("ggplot2",clean=T)
+install.packages("shiny",clean=T)
+install.packages("randomForest",clean=T)
