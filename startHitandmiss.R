@@ -29,4 +29,4 @@ explanationsList <- p(HTML("
                                             marketing cost was covered.</li>
                 </ul>"))
 
-runApp('hitandmiss',port=8080,launch.browser=F)
+runApp('hitandmiss',port=Sys.getenv('VCAP_APP_PORT'),launch.browser=F)

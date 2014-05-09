@@ -367,7 +367,7 @@ shinyServer(function(input, output) {
     posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
     negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
     
-    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior))
+    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior),ntree=300)
     
     return(rf)
   })

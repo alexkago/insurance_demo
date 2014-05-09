@@ -1,9 +1,0 @@
----
-applications:
-- name: insurance_demo
-  memory: 512M
-  instances: 1
-  host: insurance_demo
-  domain: cfapps.io
-  path: .
-  buildpack: https://github.com/alexkago/cf-buildpack-r
