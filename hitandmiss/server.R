@@ -1,9 +1,12 @@
 library(shiny)
 library(ggplot2)
+library(randomForest)
 
 shinyServer(function(input, output) {
 
   dataset <- reactive({
+    sink(stderr())
+    print("creating dataset...")
     subset <- ticcompl[sample(nrow(ticcompl), input$sampleSize),]
   })
   
@@ -88,7 +91,10 @@ shinyServer(function(input, output) {
   })
   
   tradTargeting <- reactive({
+    sink(stderr())
+    print("in tradTargeting...")
     plotData <- selectedData()
+    print("data generated...")
     
     succSpend <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$comb_range))*100
     realPot <- length(which(plotData$comb_range & plotData$CARAVAN == 1))/length(which(plotData$CARAVAN == 1))*100
@@ -136,9 +142,14 @@ shinyServer(function(input, output) {
 #   })
   
   output$plotdatascienceclassification <- renderPlot({
+    sink(stderr())
+    print("predicting with randomForest...")
     plotData <- dataset()
     
+    print("predicting with randomForest...")
     plotData$predictions <- eval(call(input$predictFcnName))[[1]]
+    
+    print("assigning predictions...")
     
     plotData$predictions <- ifelse(plotData$predictions,'black','Predict No Buy')
     plotData$predictions <- ifelse(plotData$predictions == 'black',
@@ -240,116 +251,138 @@ shinyServer(function(input, output) {
     data.frame(row.names=descriptions,Model.Targeting=values,Traditional.Targeting=valuesTrad, Ratio=ratio)
   })
   
-  output$selectXcontrols <- renderUI({
-    
-    if (is.factor(dataset()[[input$x]]))
-      choices <- levels(dataset()[[input$x]])
-    else
-      choices <- sort(unique(dataset()[[input$x]]))
-    
-    checkboxGroupInput("selectedX", "Select X Values", choices, selected = choices)
-  })
-  
-  output$selectYcontrols <- renderUI({
-    if (is.factor(dataset()[[input$y]]))
-      choices <- levels(dataset()[[input$y]])
-    else
-      choices <- sort(unique(dataset()[[input$y]]))
-    
-    checkboxGroupInput("selectedY", "Select Y Values", choices, selected = choices)
-  })
+#   output$selectXcontrols <- renderUI({
+#     
+#     if (is.factor(dataset()[[input$x]]))
+#       choices <- levels(dataset()[[input$x]])
+#     else
+#       choices <- sort(unique(dataset()[[input$x]]))
+#     
+#     checkboxGroupInput("selectedX", "Select X Values", choices, selected = choices)
+#   })
+#   
+#   output$selectYcontrols <- renderUI({
+#     if (is.factor(dataset()[[input$y]]))
+#       choices <- levels(dataset()[[input$y]])
+#     else
+#       choices <- sort(unique(dataset()[[input$y]]))
+# 
+#     checkboxGroupInput("selectedY", "Select Y Values", choices, selected = choices)
+#   })
   
   output$selectDim1controls <- renderUI({
-    if (is.factor(dataset()[[input$dim1]]))
-      choices <- levels(dataset()[[input$dim1]])
-    else
-      choices <- sort(unique(dataset()[[input$dim1]]))
-    
-    checkboxGroupInput("selectedDim1", "Select Variable 1 Values", choices, selected = choices)
+    if (input$dim1 != '') {
+      if (is.factor(dataset()[[input$dim1]]))
+        choices <- levels(dataset()[[input$dim1]])
+      else
+        choices <- sort(unique(dataset()[[input$dim1]]))
+      
+      checkboxGroupInput("selectedDim1", "Select Variable 1 Values", choices, selected = choices)
+    } else {
+      NULL
+    }
   })
   
   output$selectDim2controls <- renderUI({
-    if (is.factor(dataset()[[input$dim2]]))
-      choices <- levels(dataset()[[input$dim2]])
-    else
-      choices <- sort(unique(dataset()[[input$dim2]]))
-    
-    checkboxGroupInput("selectedDim2", "Select Variable 2 Values", choices, selected = choices)
+    if (input$dim2 != '') {
+      if (is.factor(dataset()[[input$dim2]]))
+        choices <- levels(dataset()[[input$dim2]])
+      else
+        choices <- sort(unique(dataset()[[input$dim2]]))
+      
+      checkboxGroupInput("selectedDim2", "Select Variable 2 Values", choices, selected = choices)
+    } else {
+      NULL
+    }
   })
   
   output$selectDim3controls <- renderUI({
-    if (is.factor(dataset()[[input$dim3]]))
-      choices <- levels(dataset()[[input$dim3]])
-    else
-      choices <- sort(unique(dataset()[[input$dim3]]))
-    
-    checkboxGroupInput("selectedDim3", "Select Variable 3 Values", choices, selected = choices)
+    if (input$dim3 != '') {
+      if (is.factor(dataset()[[input$dim3]]))
+        choices <- levels(dataset()[[input$dim3]])
+      else
+        choices <- sort(unique(dataset()[[input$dim3]]))
+      
+      checkboxGroupInput("selectedDim3", "Select Variable 3 Values", choices, selected = choices)
+    } else {
+      NULL
+    }
   })
   
   output$selectDim4controls <- renderUI({
-    if (is.factor(dataset()[[input$dim4]]))
-      choices <- levels(dataset()[[input$dim4]])
-    else
-      choices <- sort(unique(dataset()[[input$dim4]]))
-    
-    checkboxGroupInput("selectedDim4", "Select Variable 4 Values", choices, selected = choices)
+    if (input$dim4 != '') {
+      if (is.factor(dataset()[[input$dim4]]))
+        choices <- levels(dataset()[[input$dim4]])
+      else
+        choices <- sort(unique(dataset()[[input$dim4]]))
+      
+      checkboxGroupInput("selectedDim4", "Select Variable 4 Values", choices, selected = choices)
+    } else {
+      NULL
+    }
   })
   
   output$selectDim5controls <- renderUI({
-    if (is.factor(dataset()[[input$dim5]]))
-      choices <- levels(dataset()[[input$dim5]])
-    else
-      choices <- sort(unique(dataset()[[input$dim5]]))
-    
-    checkboxGroupInput("selectedDim5", "Select Variable 5 Values", choices, selected = choices)
+    if (input$dim5 != '') {
+      if (is.factor(dataset()[[input$dim5]]))
+        choices <- levels(dataset()[[input$dim5]])
+      else
+        choices <- sort(unique(dataset()[[input$dim5]]))
+      
+      checkboxGroupInput("selectedDim5", "Select Variable 5 Values", choices, selected = choices)
+    } else {
+      NULL
+    }
   })
   
-  output$selectDim6controls <- renderUI({
-    if (is.factor(dataset()[[input$dim6]]))
-      choices <- levels(dataset()[[input$dim6]])
-    else
-      choices <- sort(unique(dataset()[[input$dim6]]))
-    
-    checkboxGroupInput("selectedDim6", "Select Variable 6 Values", choices, selected = choices)
-  })
-  
-  output$selectDim7controls <- renderUI({
-    if (is.factor(dataset()[[input$dim7]]))
-      choices <- levels(dataset()[[input$dim7]])
-    else
-      choices <- sort(unique(dataset()[[input$dim7]]))
-    
-    checkboxGroupInput("selectedDim7", "Select Variable 7 Values", choices, selected = choices)
-  })
-  
-  output$selectDim8controls <- renderUI({
-    if (is.factor(dataset()[[input$dim8]]))
-      choices <- levels(dataset()[[input$dim8]])
-    else
-      choices <- sort(unique(dataset()[[input$dim8]]))
-    
-    checkboxGroupInput("selectedDim8", "Select Variable 8 Values", choices, selected = choices)
-  })
-  
-  output$selectDim9controls <- renderUI({
-    if (is.factor(dataset()[[input$dim9]]))
-      choices <- levels(dataset()[[input$dim9]])
-    else
-      choices <- sort(unique(dataset()[[input$dim9]]))
-    
-    checkboxGroupInput("selectedDim9", "Select Variable 9 Values", choices, selected = choices)
-  })
-  
-  output$selectDim10controls <- renderUI({
-    if (is.factor(dataset()[[input$dim10]]))
-      choices <- levels(dataset()[[input$dim10]])
-    else
-      choices <- sort(unique(dataset()[[input$dim10]]))
-    
-    checkboxGroupInput("selectedDim10", "Select Variable 10 Values", choices, selected = choices)
-  })
+#   output$selectDim6controls <- renderUI({
+#     if (is.factor(dataset()[[input$dim6]]))
+#       choices <- levels(dataset()[[input$dim6]])
+#     else
+#       choices <- sort(unique(dataset()[[input$dim6]]))
+#     
+#     checkboxGroupInput("selectedDim6", "Select Variable 6 Values", choices, selected = choices)
+#   })
+#   
+#   output$selectDim7controls <- renderUI({
+#     if (is.factor(dataset()[[input$dim7]]))
+#       choices <- levels(dataset()[[input$dim7]])
+#     else
+#       choices <- sort(unique(dataset()[[input$dim7]]))
+#     
+#     checkboxGroupInput("selectedDim7", "Select Variable 7 Values", choices, selected = choices)
+#   })
+#   
+#   output$selectDim8controls <- renderUI({
+#     if (is.factor(dataset()[[input$dim8]]))
+#       choices <- levels(dataset()[[input$dim8]])
+#     else
+#       choices <- sort(unique(dataset()[[input$dim8]]))
+#     
+#     checkboxGroupInput("selectedDim8", "Select Variable 8 Values", choices, selected = choices)
+#   })
+#   
+#   output$selectDim9controls <- renderUI({
+#     if (is.factor(dataset()[[input$dim9]]))
+#       choices <- levels(dataset()[[input$dim9]])
+#     else
+#       choices <- sort(unique(dataset()[[input$dim9]]))
+#     
+#     checkboxGroupInput("selectedDim9", "Select Variable 9 Values", choices, selected = choices)
+#   })
+#   
+#   output$selectDim10controls <- renderUI({
+#     if (is.factor(dataset()[[input$dim10]]))
+#       choices <- levels(dataset()[[input$dim10]])
+#     else
+#       choices <- sort(unique(dataset()[[input$dim10]]))
+#     
+#     checkboxGroupInput("selectedDim10", "Select Variable 10 Values", choices, selected = choices)
+#   })
   
   predictRandomForest <- reactive({
+    sink(stderr())
+    print("training random Forest")
     rf <- trainRandomForest()
     print(rf)
     
@@ -360,14 +393,19 @@ shinyServer(function(input, output) {
   })
   
   trainRandomForest <- reactive({
-    library("randomForest")
+    sink(stderr())
+    print("loading randomForest library...")
     trainData <- traindataset()
+    print("loaded library + dataset...")
     #trainData[,86] <- factor(trainData[,86])
+    
     
     posPrior <- length(which(trainData$CARAVAN == 1))/length(trainData$CARAVAN)
     negPrior <- length(which(trainData$CARAVAN == 0))/length(trainData$CARAVAN)
     
-    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior),ntree=300)
+    print("training RF model...")
+    
+    rf <- randomForest(trainData[,2:85],trainData[,86],classwt=c(negPrior,posPrior),ntree=300,do.trace=T)
     
     return(rf)
   })
@@ -450,9 +488,8 @@ shinyServer(function(input, output) {
 #     else
 #       plotData$dim10range <- plotData[[input$dim10]] %in% input$selectedDim10
     
-    plotData$comb_range <- plotData$dim1range & plotData$dim2range & plotData$dim3range & 
-      plotData$dim4range & plotData$dim5range
-        #& plotData$dim7range & plotData$dim8range & plotData$dim9range & plotData$dim10range
+    plotData$comb_range <- plotData$dim1range & plotData$dim2range & plotData$dim3range & plotData$dim4range & plotData$dim5range
+        # & plotData$dim6range & plotData$dim7range & plotData$dim8range & plotData$dim9range & plotData$dim10range
     
     return(plotData)
   })
