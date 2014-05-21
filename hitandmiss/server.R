@@ -5,7 +5,6 @@ library(randomForest)
 shinyServer(function(input, output) {
 
   dataset <- reactive({
-    sink(stderr())
     print("creating dataset...")
     subset <- ticcompl[sample(nrow(ticcompl), input$sampleSize),]
   })
@@ -91,7 +90,6 @@ shinyServer(function(input, output) {
   })
   
   tradTargeting <- reactive({
-    sink(stderr())
     print("in tradTargeting...")
     plotData <- selectedData()
     print("data generated...")
@@ -142,7 +140,6 @@ shinyServer(function(input, output) {
 #   })
   
   output$plotdatascienceclassification <- renderPlot({
-    sink(stderr())
     print("predicting with randomForest...")
     plotData <- dataset()
     
@@ -381,7 +378,6 @@ shinyServer(function(input, output) {
 #   })
   
   predictRandomForest <- reactive({
-    sink(stderr())
     print("training random Forest")
     rf <- trainRandomForest()
     print(rf)
@@ -393,7 +389,6 @@ shinyServer(function(input, output) {
   })
   
   trainRandomForest <- reactive({
-    sink(stderr())
     print("loading randomForest library...")
     trainData <- traindataset()
     print("loaded library + dataset...")
