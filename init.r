@@ -1,3 +1,5 @@
+sink(stderr())
+print("test")
 system('wget http://cran.r-project.org/src/contrib/Archive/Rcpp/Rcpp_0.10.4.tar.gz')
 system('R CMD INSTALL -c Rcpp_0.10.4.tar.gz')
 system('rm Rcpp_0.10.4.tar.gz')
@@ -20,7 +22,15 @@ system('wget http://cran.r-project.org/src/contrib/Archive/reshape2/reshape2_1.2
 system('R CMD INSTALL -c reshape2_1.2.2.tar.gz')
 system('rm reshape2_1.2.2.tar.gz')
 
-install.packages("ggplot2",clean=T)
+install.packages("digest",clean=T)
+install.packages("gtable",clean=T)
+install.packages("scales",clean=T)
+install.packages("proto",clean=T)
+
+system('wget http://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_0.9.3.1.tar.gz')
+system('R CMD INSTALL -c ggplot2_0.9.3.1.tar.gz')
+system('rm ggplot2_0.9.3.1.tar.gz')
+
 install.packages("shiny",clean=T)
 install.packages("randomForest",clean=T)
 install.packages("Rook",clean=T)

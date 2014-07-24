@@ -233,6 +233,9 @@ shinyUI(pageWithSidebar(
                conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
                                            $('div#plotdatascienceclassification').hasClass('recalculating')",
                                 h3("Please wait a few seconds for the model to finish training...")),
+               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
+                                           $('div#plotdatascienceclassification').hasClass('recalculating')",
+                                div(align="center",img(src="loading.gif"))),
                h4("Background"),
                p("On this tab, a Machine Learning model is being trained that predicts which customers are likely to buy caravan insurance.
                  After the model has finished training, you can see an output of the model decision in the plot below. Keep in mind, that
@@ -261,12 +264,7 @@ shinyUI(pageWithSidebar(
                #p("Model output, a probability between 0 and 1 for a customer to buy the caravan insurance."),
                #plotOutput("plotdatascience"),
                p("The below plot shows the classification of the customer base, based on the trained model and specified classification cutoff:"),
-               conditionalPanel(condition="$('div#plotdatascienceclassification').contents().length==0 || 
-                                           $('div#plotdatascienceclassification').hasClass('recalculating')",
-                                div(align="center",style="height: 400px",img(src="loading.gif"))),
-               conditionalPanel(condition="!($('div#plotdatascienceclassification').contents().length==0 || 
-                                           $('div#plotdatascienceclassification').hasClass('recalculating'))",
-                                plotOutput("plotdatascienceclassification")),
+               plotOutput("plotdatascienceclassification"),
                #conditionalPanel(condition="!($('div#baseline').text()=='' || $('html').hasClass('shiny-busy'))", br()),
                #plotOutput("plotdatascienceclassification"),
                p("In the table below are the financial results of the chosen target group selection based off the cost and return values 
